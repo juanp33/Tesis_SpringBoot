@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    private final String SECRET_KEY = "clave-super-secreta-para-jwt-12345678901234567890123456789012";
+    private final String SECRET_KEY = "ClaveDecodifcacionJWT";
     private final int EXPIRATION_MS = 3600000;
 
     private Key getKey() {

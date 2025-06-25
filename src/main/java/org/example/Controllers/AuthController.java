@@ -18,6 +18,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -36,24 +38,32 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public String register(@RequestBody Usuario user) {
+    public ResponseEntity<String> register(@RequestBody Usuario user) {
+        Optional<Usuario> existingUserByUsername = usuarioRepo.findByUsername(user.getUsername());
+        if (existingUserByUsername.isPresent()) {
+            return ResponseEntity.badRequest().body("Error: El nombre de usuario ya está en uso.");
+        }
+
+        Optional<Usuario> existingUserByEmail = usuarioRepo.findByEmail(user.getEmail());
+        if (existingUserByEmail.isPresent()) {
+            return ResponseEntity.badRequest().body("Error: El email ya está registrado.");
+        }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
         usuarioRepo.save(user);
-        return "Usuario registrado con éxito";
+        return ResponseEntity.ok("Usuario registrado con éxito");
     }
-
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest loginRequest) {
-        System.out.println("hola");
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsername(),
                         loginRequest.getPassword()
                 )
         );
-        System.out.println("hola2");
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = jwtUtil.generateToken((UserDetails) authentication.getPrincipal());

@@ -22,7 +22,7 @@ public class UserDetailsServiceImp implements UserDetailsService {
         Usuario usuario = usuarioRepository.findByUsername(user)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + user));
 
-        // Extraer permisos desde los roles asociados al usuario
+
         Set<SimpleGrantedAuthority> authorities = usuario.getRoles().stream()
 
                 .map((Rol role) -> new SimpleGrantedAuthority(role.toString()))
