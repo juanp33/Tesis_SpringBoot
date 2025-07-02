@@ -1,8 +1,8 @@
-package example.Services;
+package org.example.Services;
 
-import example.Models.Rol;
-import example.Models.Usuario;
-import example.Repositorios.UsuarioRepository;
+import org.example.Models.Rol;
+import org.example.Models.Usuario;
+import org.example.Repositorios.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;

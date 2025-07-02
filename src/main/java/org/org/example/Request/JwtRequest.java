@@ -1,4 +1,4 @@
-package example.Request;
+package org.example.Request;
 
 public class JwtRequest {
     private String username;

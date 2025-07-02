@@ -1,8 +1,8 @@
-package example.Repositorios;
+package org.example.Repositorios;
 
 
 
-import example.Models.Rol;
+import org.example.Models.Rol;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

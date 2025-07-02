@@ -1,4 +1,4 @@
-package example.Response;
+package org.example.Response;
 
 public class JwtResponse {
     private String token;

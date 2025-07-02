@@ -1,4 +1,4 @@
-package example.Models;
+package org.example.Models;
 
 import jakarta.persistence.*;
 import java.util.*;

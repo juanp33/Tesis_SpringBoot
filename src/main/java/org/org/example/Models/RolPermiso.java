@@ -1,7 +1,5 @@
-package example.Models;
+package org.example.Models;
 
-import example.Models.Permiso;
-import example.Models.Rol;
 import jakarta.persistence.*;
 
 @Entity
@@ -17,4 +15,20 @@ public class RolPermiso {
     @ManyToOne
     @JoinColumn(name = "permiso_id")
     private Permiso permiso;
+
+    public void setRol(Rol rol) {
+        this.rol = rol;
+    }
+
+    public void setPermiso(Permiso permiso) {
+        this.permiso = permiso;
+    }
+
+    public Rol getRol() {
+        return rol;
+    }
+
+    public Permiso getPermiso() {
+        return permiso;
+    }
 }

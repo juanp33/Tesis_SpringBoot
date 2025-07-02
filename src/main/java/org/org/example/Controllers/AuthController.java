@@ -1,13 +1,12 @@
-package example.Controllers;
+package org.example.Controllers;
 
 
-import example.Configuracion.JwtUtil;
-import example.Models.Rol;
-import example.Models.Usuario;
-import example.Repositorios.RolRepository;
-import example.Repositorios.UsuarioRepository;
-import example.Request.JwtRequest;
-import example.Response.JwtResponse;
+import org.example.Configuracion.JwtUtil;
+import org.example.Models.Usuario;
+import org.example.Repositorios.RolRepository;
+import org.example.Repositorios.UsuarioRepository;
+import org.example.Request.JwtRequest;
+import org.example.Response.JwtResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -1,4 +1,4 @@
-package example.Models;
+package org.example.Models;
 
 import jakarta.persistence.*;
 import java.util.*;
@@ -20,7 +20,8 @@ public class Usuario {
     )
     private Set<Rol> roles = new HashSet<>();
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "abogado_id")
     private Abogado abogado;
 
     public Long getId() {

@@ -1,9 +1,9 @@
-package example.Repositorios;
+package org.example.Repositorios;
 
 
 
 
-import example.Models.Usuario;
+import org.example.Models.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
