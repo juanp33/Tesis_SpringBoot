@@ -1,5 +1,6 @@
 package org.example.Request;
 
+
 public class RegisterRequest {
     private String email;
     private String username;
@@ -13,6 +14,10 @@ public class RegisterRequest {
     public void setEmail(String email) {
         this.email = email;
     }
+
+public class JwtRequest {
+    private String username;
+    private String password;
 
     public String getUsername() {
         return username;
@@ -29,4 +34,5 @@ public class RegisterRequest {
     public void setPassword(String password) {
         this.password = password;
     }
+}
 }
