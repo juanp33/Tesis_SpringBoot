@@ -2,12 +2,15 @@ package org.example.Repositorios;
 
 
 
-import org.example.Models.Rol;
+
+import org.example.Models.Abogado;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-import java.util.Optional;
+
+
 @RepositoryRestResource
-public interface RolRepository extends JpaRepository<Rol, Long> {
-    Optional<Rol> findByNombre(String nombre);
+public interface AbogadoRepository extends JpaRepository<Abogado, Long> {
+
 }
