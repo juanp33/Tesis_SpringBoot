@@ -1,5 +1,6 @@
 package org.example.Models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.*;
 
@@ -20,10 +21,10 @@ public class Usuario {
     )
     private Set<Rol> roles = new HashSet<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "abogado_id")
+    // En Usuario.java
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private Abogado abogado;
-
     public Long getId() {
         return id;
     }

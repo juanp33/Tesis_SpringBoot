@@ -1,12 +1,11 @@
 package org.example.Controllers;
 
-
 import org.example.Configuracion.JwtUtil;
+import org.example.Models.Abogado;
 import org.example.Models.Usuario;
+import org.example.Repositorios.AbogadoRepository;
 import org.example.Repositorios.RolRepository;
 import org.example.Repositorios.UsuarioRepository;
-
-
 import org.example.Request.JwtRequest;
 import org.example.Request.RegisterRequest;
 import org.example.Response.JwtResponse;
@@ -22,24 +21,32 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
+    private AbogadoRepository abogadoRepository;
+
+    @Autowired
     private JwtUtil jwtUtil;
+
     @Autowired
     private UsuarioRepository usuarioRepo;
+
     @Autowired
     private RolRepository rolRepo;
+
     @Autowired
     private UserDetailsServiceImp userDetailsService;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    // ---------------- Validar token ----------------
     @GetMapping("/validar-token")
     public ResponseEntity<?> validarToken(@RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -64,33 +71,42 @@ public class AuthController {
 
         return ResponseEntity.ok("Token válido");
     }
+
+    // ---------------- Registro de usuario + abogado ----------------
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
-        Optional<Usuario> existingUserByUsername = usuarioRepo.findByUsername(request.getUsername());
-        if (existingUserByUsername.isPresent()) {
-            return ResponseEntity.badRequest().body("Error: El nombre de usuario ya está en uso.");
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
+        if (usuarioRepo.existsByUsername(request.getUsername())) {
+            return ResponseEntity.badRequest().body("El username ya existe");
+        }
+        if (usuarioRepo.existsByEmail(request.getEmail())) {
+            return ResponseEntity.badRequest().body("El email ya existe");
         }
 
-        Optional<Usuario> existingUserByEmail = usuarioRepo.findByEmail(request.getEmail());
-        if (existingUserByEmail.isPresent()) {
-            return ResponseEntity.badRequest().body("Error: El email ya está registrado.");
-        }
+        // Crear usuario
+        Usuario usuario = new Usuario();
+        usuario.setUsername(request.getUsername());
+        usuario.setEmail(request.getEmail());
+        usuario.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        Usuario user = new Usuario();
-        user.setUsername(request.getUsername());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        // Crear abogado y vincular con usuario
+        Abogado abogado = new Abogado();
+        abogado.setNombre(request.getNombre());
+        abogado.setApellido(request.getApellido());
+        abogado.setCi(request.getCi());
+        abogado.setEmail(request.getEmail());
+        abogado.setUsuario(usuario);
 
-        usuarioRepo.save(user);
+        usuario.setAbogado(abogado);
 
-        return ResponseEntity.ok("Usuario registrado con éxito");
+        usuarioRepo.save(usuario); // guarda usuario y abogado
+
+        return ResponseEntity.ok("Usuario y Abogado creados correctamente");
     }
 
+    // ---------------- Login ----------------
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody JwtRequest loginRequest) {
         try {
-            System.out.println("Intentando autenticar usuario: " + loginRequest.getUsername());
-
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getUsername(),
@@ -98,19 +114,13 @@ public class AuthController {
                     )
             );
 
-            System.out.println("Autenticación exitosa para: " + loginRequest.getUsername());
-
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             String jwt = jwtUtil.generateToken((UserDetails) authentication.getPrincipal());
 
-            System.out.println("Token generado: " + jwt);
-
             return ResponseEntity.ok(new JwtResponse(jwt));
         } catch (Exception e) {
-            System.out.println("Error al autenticar: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         }
     }
-
 }

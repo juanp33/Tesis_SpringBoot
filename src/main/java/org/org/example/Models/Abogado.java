@@ -1,5 +1,7 @@
 package org.example.Models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.*;
 
@@ -14,8 +16,14 @@ public class Abogado {
     private String apellido;
     private String ci;
     private String email;
-
-
+    // Relación con Usuario
+    @OneToOne
+    @JoinColumn(name = "usuario_id")
+    @JsonBackReference
+    private Usuario usuario;
+    @ManyToMany(mappedBy = "abogados")
+    @JsonBackReference("cliente-abogados")
+    private List<Cliente> clientes;
     public Long getId() {
         return id;
     }
@@ -56,5 +64,19 @@ public class Abogado {
         this.email = email;
     }
 
+    public Usuario getUsuario() {
+        return usuario;
+    }
 
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public List<Cliente> getClientes() {
+        return clientes;
+    }
+
+    public void setClientes(List<Cliente> clientes) {
+        this.clientes = clientes;
+    }
 }
