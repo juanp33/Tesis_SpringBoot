@@ -20,6 +20,7 @@ public class CasoController {
         this.casoService = casoService;
     }
 
+    // 🔹 Crear caso
     @PostMapping
     public ResponseEntity<Caso> crearCaso(
             @RequestParam String titulo,
@@ -40,16 +41,77 @@ public class CasoController {
         return ResponseEntity.ok(nuevoCaso);
     }
 
+    // 🔹 Obtener caso
     @GetMapping("/{id}")
-    public ResponseEntity<Caso> obtenerCaso(@PathVariable Long id) {
-        return ResponseEntity.ok(casoService.obtenerCaso(id));
+    public ResponseEntity<Caso> obtenerCaso(
+            @PathVariable Long id,
+            Authentication auth
+    ) {
+        return ResponseEntity.ok(
+                casoService.obtenerCasoSeguro(id, auth.getName())
+        );
     }
 
+    // 🔹 Actualizar caso completo
+    @PutMapping("/{id}")
+    public ResponseEntity<Caso> actualizarCaso(
+            @PathVariable Long id,
+            @RequestBody Caso casoActualizado,
+            Authentication auth
+    ) {
+        return ResponseEntity.ok(
+                casoService.actualizarCasoSeguro(id, casoActualizado, auth.getName())
+        );
+    }
+
+    // 🔹 Cambiar solo el estado
+    @PutMapping("/{id}/estado")
+    public ResponseEntity<Caso> cambiarEstado(
+            @PathVariable Long id,
+            @RequestBody EstadoDTO estadoDto,
+            Authentication auth
+    ) {
+        return ResponseEntity.ok(
+                casoService.cambiarEstadoSeguro(id, estadoDto.getEstado(), auth.getName())
+        );
+    }
+
+    // 🔹 Subir archivo
     @PostMapping("/{id}/archivos")
     public ResponseEntity<ArchivoCaso> subirArchivo(
             @PathVariable Long id,
-            @RequestParam MultipartFile archivo
+            @RequestParam MultipartFile archivo,
+            Authentication auth
     ) throws Exception {
-        return ResponseEntity.ok(casoService.subirArchivo(id, archivo));
+        return ResponseEntity.ok(casoService.subirArchivoSeguro(id, archivo, auth.getName()));
+    }
+
+    // 🔹 Eliminar archivo
+    @DeleteMapping("/{id}/archivos/{archivoId}")
+    public ResponseEntity<Caso> eliminarArchivo(
+            @PathVariable Long id,
+            @PathVariable Long archivoId,
+            Authentication auth
+    ) throws Exception {
+        return ResponseEntity.ok(
+                casoService.eliminarArchivoSeguro(id, archivoId, auth.getName())
+        );
+    }
+
+    // 🔹 Eliminar caso
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarCaso(
+            @PathVariable Long id,
+            Authentication auth
+    ) {
+        casoService.eliminarCasoSeguro(id, auth.getName());
+        return ResponseEntity.noContent().build();
+    }
+
+    // DTO auxiliar para el estado
+    public static class EstadoDTO {
+        private String estado;
+        public String getEstado() { return estado; }
+        public void setEstado(String estado) { this.estado = estado; }
     }
 }

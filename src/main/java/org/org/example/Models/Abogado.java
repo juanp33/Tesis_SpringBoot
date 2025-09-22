@@ -21,8 +21,9 @@ public class Abogado {
     @JoinColumn(name = "usuario_id")
     @JsonBackReference
     private Usuario usuario;
+    // Abogado.java
     @ManyToMany(mappedBy = "abogados")
-    @JsonBackReference("cliente-abogados")
+    @JsonIgnore
     private List<Cliente> clientes;
     public Long getId() {
         return id;

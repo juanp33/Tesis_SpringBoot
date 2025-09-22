@@ -50,7 +50,32 @@ public class ClienteController {
             List<Cliente> clientes = clienteService.obtenerClientesPorUsuario(username);
             return ResponseEntity.ok(clientes != null ? clientes : List.of());
         } catch (RuntimeException e) {
-            return ResponseEntity.ok(List.of()); // devuelve lista vacía si falla
+            return ResponseEntity.ok(List.of());
+        }
+    }
+
+    // ✅ Listar TODOS los clientes (para vincular)
+    @GetMapping("/all")
+    public ResponseEntity<List<Cliente>> listarTodosLosClientes() {
+        try {
+            List<Cliente> clientes = clienteService.obtenerTodosLosClientes();
+            return ResponseEntity.ok(clientes != null ? clientes : List.of());
+        } catch (RuntimeException e) {
+            return ResponseEntity.ok(List.of());
+        }
+    }
+
+    // ✅ Vincular cliente existente con el abogado autenticado
+    @PostMapping("/{id}/vincular")
+    public ResponseEntity<Cliente> vincularCliente(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        try {
+            Cliente vinculado = clienteService.vincularClienteConAbogado(id, authentication.getName());
+            return ResponseEntity.ok(vinculado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -89,7 +114,7 @@ public class ClienteController {
             List<Caso> casos = clienteService.getCasosByCliente(id);
             return ResponseEntity.ok(casos != null ? casos : List.of());
         } catch (RuntimeException e) {
-            return ResponseEntity.ok(List.of()); // nunca null
+            return ResponseEntity.ok(List.of());
         }
     }
 }

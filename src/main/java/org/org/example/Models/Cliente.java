@@ -29,7 +29,6 @@ public class Cliente {
             joinColumns = @JoinColumn(name = "cliente_id"),
             inverseJoinColumns = @JoinColumn(name = "abogado_id")
     )
-    @JsonManagedReference("cliente-abogados")  // Cliente "posee" abogados
     private List<Abogado> abogados;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)

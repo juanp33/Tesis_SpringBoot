@@ -21,12 +21,14 @@ public class CasoService {
     private final CasoRepository casoRepositorio;
     private final ArchivoCasoRepository archivoCasoRepositorio;
     private final ClienteRepository clienteRepository;
-    public CasoService(CasoRepository casoRepositorio, ArchivoCasoRepository archivoCasoRepositorio,ClienteRepository clienteRepository) {
+
+    public CasoService(CasoRepository casoRepositorio, ArchivoCasoRepository archivoCasoRepositorio, ClienteRepository clienteRepository) {
         this.casoRepositorio = casoRepositorio;
         this.archivoCasoRepositorio = archivoCasoRepositorio;
         this.clienteRepository = clienteRepository;
     }
 
+    // Crear caso genérico
     public Caso crearCaso(Caso caso) {
         return casoRepositorio.save(caso);
     }
@@ -35,9 +37,75 @@ public class CasoService {
         return casoRepositorio.findByClienteId(clienteId);
     }
 
+    // Obtener caso sin seguridad
     public Caso obtenerCaso(Long id) {
         return casoRepositorio.findById(id).orElseThrow();
     }
+
+    // ========================
+    // 🔹 Métodos SEGUROS
+    // ========================
+
+    public Caso obtenerCasoSeguro(Long id, String abogadoUsername) {
+        Caso caso = obtenerCaso(id);
+        if (!caso.getAbogado().equals(abogadoUsername)) {
+            throw new RuntimeException("No tienes acceso a este caso");
+        }
+        return caso;
+    }
+
+    public Caso actualizarCasoSeguro(Long id, Caso actualizado, String abogadoUsername) {
+        Caso caso = obtenerCasoSeguro(id, abogadoUsername);
+        caso.setTitulo(actualizado.getTitulo());
+        caso.setTipo(actualizado.getTipo());
+        caso.setDescripcion(actualizado.getDescripcion());
+        caso.setEstado(actualizado.getEstado());
+        return casoRepositorio.save(caso);
+    }
+
+    public Caso cambiarEstadoSeguro(Long id, String nuevoEstado, String abogadoUsername) {
+        Caso caso = obtenerCasoSeguro(id, abogadoUsername);
+        caso.setEstado(nuevoEstado);
+        return casoRepositorio.save(caso);
+    }
+
+    public ArchivoCaso subirArchivoSeguro(Long casoId, MultipartFile archivo, String abogadoUsername) throws IOException {
+        Caso caso = obtenerCasoSeguro(casoId, abogadoUsername);
+
+        String rutaSubida = "uploads/casos/" + casoId;
+        Files.createDirectories(Paths.get(rutaSubida));
+
+        Path rutaArchivo = Paths.get(rutaSubida).resolve(archivo.getOriginalFilename());
+        Files.copy(archivo.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
+
+        ArchivoCaso archivoCaso = new ArchivoCaso();
+        archivoCaso.setNombreArchivo(archivo.getOriginalFilename());
+        archivoCaso.setRutaArchivo(rutaArchivo.toString());
+        archivoCaso.setCaso(caso);
+
+        return archivoCasoRepositorio.save(archivoCaso);
+    }
+
+    public Caso eliminarArchivoSeguro(Long casoId, Long archivoId, String abogadoUsername) {
+        Caso caso = obtenerCasoSeguro(casoId, abogadoUsername);
+        ArchivoCaso archivo = archivoCasoRepositorio.findById(archivoId).orElseThrow();
+
+        if (!archivo.getCaso().getId().equals(casoId)) {
+            throw new RuntimeException("Archivo no pertenece al caso");
+        }
+
+        archivoCasoRepositorio.delete(archivo);
+        return casoRepositorio.findById(casoId).orElseThrow();
+    }
+
+    public void eliminarCasoSeguro(Long id, String abogadoUsername) {
+        Caso caso = obtenerCasoSeguro(id, abogadoUsername);
+        casoRepositorio.delete(caso);
+    }
+
+    // ========================
+    // Métodos auxiliares
+    // ========================
 
     public ArchivoCaso subirArchivo(Long casoId, MultipartFile archivo) throws IOException {
         Caso caso = casoRepositorio.findById(casoId).orElseThrow();
@@ -69,6 +137,7 @@ public class CasoService {
     public List<ArchivoCaso> listarArchivos(Long casoId) {
         return archivoCasoRepositorio.findByCasoId(casoId);
     }
+
     public Caso crearCasoParaCliente(Caso caso, Long clienteId, List<MultipartFile> archivos) throws Exception {
         Cliente cliente = clienteRepository.findById(clienteId).orElseThrow();
         caso.setCliente(cliente);
@@ -84,3 +153,4 @@ public class CasoService {
         return nuevoCaso;
     }
 }
+

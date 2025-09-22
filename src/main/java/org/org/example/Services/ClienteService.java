@@ -59,9 +59,31 @@ public class ClienteService {
         return clienteRepository.save(cliente);
     }
 
-    // 🔹 Obtener todos los clientes
-    public List<Cliente> getAllClientes() {
+    // 🔹 Obtener todos los clientes (global)
+    public List<Cliente> obtenerTodosLosClientes() {
         return clienteRepository.findAll();
+    }
+
+    // 🔹 Vincular cliente existente al abogado autenticado
+    @Transactional
+    public Cliente vincularClienteConAbogado(Long clienteId, String usernameUsuario) {
+        Usuario usuario = usuarioRepository.findByUsername(usernameUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        Abogado abogado = usuario.getAbogado();
+        if (abogado == null) {
+            throw new RuntimeException("El usuario no tiene un abogado asociado");
+        }
+
+        Cliente cliente = clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
+        if (!cliente.getAbogados().contains(abogado)) {
+            cliente.getAbogados().add(abogado);
+            cliente = clienteRepository.save(cliente);
+        }
+
+        return cliente;
     }
 
     // 🔹 Obtener cliente por ID
