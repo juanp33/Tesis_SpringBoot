@@ -14,6 +14,9 @@ public class Message {
     private String content;
     private String filename;
     private String filepath;
+    @ManyToOne
+    @JoinColumn(name = "chat_id_fk")
+    private Chat chat;
     public Message() {}
 
     public Message(String chatId, String role, String content, String filename, String filepath) {
