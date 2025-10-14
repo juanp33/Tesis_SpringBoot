@@ -35,4 +35,8 @@ public class AbogadoService {
     public void delete(Long id) {
         repo.deleteById(id);
     }
+
+    public Optional<Abogado> findByUsuarioId(Long usuarioId) {
+        return repo.findByUsuarioId(usuarioId);
+    }
 }

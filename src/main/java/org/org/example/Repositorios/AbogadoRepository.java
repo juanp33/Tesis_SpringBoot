@@ -16,4 +16,5 @@ import java.util.Optional;
 public interface AbogadoRepository extends JpaRepository<Abogado, Long> {
 
     Optional<Abogado> findByNombre(String nombre);
+    Optional<Abogado> findByUsuarioId(Long usuarioId);
 }

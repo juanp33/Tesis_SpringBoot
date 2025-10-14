@@ -4,9 +4,12 @@ import java.util.List;
 
 import org.example.Models.Usuario;
 import org.example.Services.UsuarioService;
+import org.org.example.Response.UsuarioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.example.Services.AbogadoService;
+
 
 @RestController
 @RequestMapping("/usuarios")
@@ -14,9 +17,27 @@ public class UsuarioController {
     @Autowired
     private UsuarioService service;
 
+    @Autowired
+    private AbogadoService abogadoService;
+
     @GetMapping
-    public ResponseEntity<List<Usuario>> all() {
-        return ResponseEntity.ok(service.findAll());
+    public ResponseEntity<List<UsuarioDTO>> all() {
+        List<Usuario> usuarios = service.findAll();
+
+        List<UsuarioDTO> usuariosDTO = usuarios.stream().map(u -> {
+            // Buscar abogado que tenga este usuario
+            var abogado = abogadoService.findByUsuarioId(u.getId());
+            Long abogadoId = abogado.map(a -> a.getId()).orElse(null);
+
+            return new UsuarioDTO(
+                    u.getId(),
+                    u.getUsername(),
+                    u.getEmail(),
+                    abogadoId
+            );
+        }).toList();
+
+        return ResponseEntity.ok(usuariosDTO);
     }
 
     @GetMapping("/{id}")
