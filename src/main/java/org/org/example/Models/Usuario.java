@@ -21,7 +21,7 @@ public class Usuario {
     )
     private Set<Rol> roles = new HashSet<>();
 
-    // En Usuario.java
+
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Abogado abogado;

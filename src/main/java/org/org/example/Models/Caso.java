@@ -14,14 +14,14 @@ public class Caso {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String titulo;       // Ej: "Pérez vs Gómez"
-    private String tipo;         // civil, penal, laboral, etc.
+    private String titulo;
+    private String tipo;
 
-    private String abogado;      // abogado asignado
-    private String estado;       // abierto, cerrado, en proceso
+    private String abogado;
+    private String estado;
 
-    @Column(length = 2000)       // permite textos más largos
-    private String descripcion;  // descripción del caso
+    @Column(length = 2000)
+    private String descripcion;
 
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 

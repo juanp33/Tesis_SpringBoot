@@ -31,11 +31,11 @@ public class SecurityConfig {
                 )
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // endpoints de autenticación sin token
+
                         .requestMatchers("/api/auth/**").permitAll()
-                        // pre-flight CORS
+
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // todos los demás requieren solo autenticación
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -16,12 +16,12 @@ public class Abogado {
     private String apellido;
     private String ci;
     private String email;
-    // Relación con Usuario
+
     @OneToOne
     @JoinColumn(name = "usuario_id")
     @JsonBackReference
     private Usuario usuario;
-    // Abogado.java
+
     @ManyToMany(mappedBy = "abogados")
     @JsonIgnore
     private List<Cliente> clientes;

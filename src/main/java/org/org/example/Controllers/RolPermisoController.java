@@ -17,14 +17,14 @@ public class RolPermisoController {
     @Autowired
     private RolPermisoService service;
 
-    /** Obtener todos los RolPermiso */
+
     @GetMapping
     public ResponseEntity<List<RolPermiso>> getAll() {
         List<RolPermiso> list = service.findAll();
         return ResponseEntity.ok(list);
     }
 
-    /** Obtener un RolPermiso por ID */
+
     @GetMapping("/{id}")
     public ResponseEntity<RolPermiso> getById(@PathVariable Long id) {
         Optional<RolPermiso> opt = service.findById(id);
@@ -33,14 +33,14 @@ public class RolPermisoController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    /** Crear un nuevo RolPermiso */
+
     @PostMapping
     public ResponseEntity<RolPermiso> create(@RequestBody RolPermiso rp) {
         RolPermiso creado = service.create(rp);
         return ResponseEntity.status(201).body(creado);
     }
 
-    /** Actualizar un RolPermiso existente */
+
     @PutMapping("/{id}")
     public ResponseEntity<RolPermiso> update(
             @PathVariable Long id,
@@ -53,7 +53,7 @@ public class RolPermisoController {
         return ResponseEntity.ok(actualizado);
     }
 
-    /** Borrar un RolPermiso */
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (!service.findById(id).isPresent()) {

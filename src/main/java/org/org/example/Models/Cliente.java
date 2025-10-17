@@ -22,7 +22,7 @@ public class Cliente {
     private String ci;
     private String email;
 
-    // Un cliente puede tener varios abogados
+
     @ManyToMany
     @JoinTable(
             name = "cliente_abogados",

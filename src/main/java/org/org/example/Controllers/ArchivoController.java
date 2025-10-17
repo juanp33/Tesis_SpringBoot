@@ -22,8 +22,6 @@ public class ArchivoController {
             @PathVariable String nombreArchivo,
             Authentication authentication) throws MalformedURLException {
 
-        // 🚨 acá podés validar si el abogado autenticado tiene permiso sobre este caso
-        // por ahora solo verificamos que esté autenticado
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(403).build();
         }

@@ -20,7 +20,7 @@ public class CasoController {
         this.casoService = casoService;
     }
 
-    // 🔹 Crear caso
+
     @PostMapping
     public ResponseEntity<Caso> crearCaso(
             @RequestParam String titulo,
@@ -41,7 +41,7 @@ public class CasoController {
         return ResponseEntity.ok(nuevoCaso);
     }
 
-    // 🔹 Obtener caso
+
     @GetMapping("/{id}")
     public ResponseEntity<Caso> obtenerCaso(
             @PathVariable Long id,
@@ -52,7 +52,7 @@ public class CasoController {
         );
     }
 
-    // 🔹 Actualizar caso completo
+
     @PutMapping("/{id}")
     public ResponseEntity<Caso> actualizarCaso(
             @PathVariable Long id,
@@ -64,7 +64,7 @@ public class CasoController {
         );
     }
 
-    // 🔹 Cambiar solo el estado
+
     @PutMapping("/{id}/estado")
     public ResponseEntity<Caso> cambiarEstado(
             @PathVariable Long id,
@@ -76,7 +76,7 @@ public class CasoController {
         );
     }
 
-    // 🔹 Subir archivo
+
     @PostMapping("/{id}/archivos")
     public ResponseEntity<ArchivoCaso> subirArchivo(
             @PathVariable Long id,
@@ -86,7 +86,7 @@ public class CasoController {
         return ResponseEntity.ok(casoService.subirArchivoSeguro(id, archivo, auth.getName()));
     }
 
-    // 🔹 Eliminar archivo
+
     @DeleteMapping("/{id}/archivos/{archivoId}")
     public ResponseEntity<Caso> eliminarArchivo(
             @PathVariable Long id,
@@ -98,7 +98,7 @@ public class CasoController {
         );
     }
 
-    // 🔹 Eliminar caso
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarCaso(
             @PathVariable Long id,
@@ -108,7 +108,7 @@ public class CasoController {
         return ResponseEntity.noContent().build();
     }
 
-    // DTO auxiliar para el estado
+
     public static class EstadoDTO {
         private String estado;
         public String getEstado() { return estado; }

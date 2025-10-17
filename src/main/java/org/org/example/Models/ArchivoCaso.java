@@ -63,5 +63,5 @@ public class ArchivoCaso {
 
 
 
-    // getters y setters
+
 }
