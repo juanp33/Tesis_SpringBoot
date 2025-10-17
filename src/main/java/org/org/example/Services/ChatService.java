@@ -24,7 +24,9 @@ public class ChatService {
             Files.createDirectories(uploadDir);
         }
     }
-
+    public List<Message> getChatHistory(String chatId) {
+        return messageRepository.findByChatIdOrderByIdAsc(chatId);
+    }
     public List<Message> saveChat(String chatId, String userMessage, String assistantResponse, List<MultipartFile> files) throws IOException {
         List<Message> saved = new ArrayList<>();
 
@@ -51,7 +53,5 @@ public class ChatService {
         return saved;
     }
 
-    public List<Message> getChatHistory(String chatId) {
-        return messageRepository.findByChatIdOrderByIdAsc(chatId);
-    }
+
 }
