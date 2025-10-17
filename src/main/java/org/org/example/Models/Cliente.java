@@ -22,7 +22,7 @@ public class Cliente {
     private String ci;
     private String email;
 
-    // Un cliente puede tener varios abogados
+
     @ManyToMany
     @JoinTable(
             name = "cliente_abogados",
@@ -34,7 +34,6 @@ public class Cliente {
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("cliente-casos")
     private List<Caso> casos;
-    // Getters y setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

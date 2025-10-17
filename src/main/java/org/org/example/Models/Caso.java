@@ -43,7 +43,7 @@ public class Caso {
         this.cliente = cliente;
     }
 
-    // Getters y setters
+
     public Long getId() {
         return id;
     }

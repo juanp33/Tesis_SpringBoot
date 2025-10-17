@@ -28,7 +28,7 @@ public class ClienteService {
         this.abogadoRepository = abogadoRepository;
     }
 
-    // 🔹 Listar clientes del abogado autenticado
+
     public List<Cliente> obtenerClientesPorUsuario(String usernameUsuario) {
         Usuario usuario = usuarioRepository.findByUsername(usernameUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -41,7 +41,7 @@ public class ClienteService {
         return clienteRepository.findByAbogadosContains(abogado);
     }
 
-    // 🔹 Crear cliente y vincularlo al abogado autenticado
+
     public Cliente crearCliente(Cliente cliente, String usernameUsuario) {
         Usuario usuario = usuarioRepository.findByUsername(usernameUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -59,12 +59,12 @@ public class ClienteService {
         return clienteRepository.save(cliente);
     }
 
-    // 🔹 Obtener todos los clientes (global)
+
     public List<Cliente> obtenerTodosLosClientes() {
         return clienteRepository.findAll();
     }
 
-    // 🔹 Vincular cliente existente al abogado autenticado
+
     @Transactional
     public Cliente vincularClienteConAbogado(Long clienteId, String usernameUsuario) {
         Usuario usuario = usuarioRepository.findByUsername(usernameUsuario)
@@ -86,13 +86,13 @@ public class ClienteService {
         return cliente;
     }
 
-    // 🔹 Obtener cliente por ID
+
     public Cliente getCliente(Long id) {
         return clienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
     }
 
-    // 🔹 Crear cliente asignando abogados por IDs
+
     @Transactional
     public Cliente createCliente(Cliente cliente, List<Long> abogadosIds) {
         if (abogadosIds != null && !abogadosIds.isEmpty()) {
@@ -102,7 +102,7 @@ public class ClienteService {
         return clienteRepository.save(cliente);
     }
 
-    // 🔹 Actualizar cliente
+
     @Transactional
     public Cliente updateCliente(Long id, Cliente updatedCliente, List<Long> abogadosIds) {
         Cliente cliente = getCliente(id);
@@ -120,13 +120,13 @@ public class ClienteService {
         return clienteRepository.save(cliente);
     }
 
-    // 🔹 Eliminar cliente
+
     public void deleteCliente(Long id) {
         Cliente cliente = getCliente(id); // valida existencia
         clienteRepository.delete(cliente);
     }
 
-    // 🔹 Obtener casos de un cliente
+
     public List<Caso> getCasosByCliente(Long clienteId) {
         Cliente cliente = getCliente(clienteId);
         return cliente.getCasos() != null ? cliente.getCasos() : new ArrayList<>();

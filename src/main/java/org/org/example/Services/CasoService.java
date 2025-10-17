@@ -28,7 +28,7 @@ public class CasoService {
         this.clienteRepository = clienteRepository;
     }
 
-    // Crear caso genérico
+
     public Caso crearCaso(Caso caso) {
         return casoRepositorio.save(caso);
     }
@@ -37,14 +37,11 @@ public class CasoService {
         return casoRepositorio.findByClienteId(clienteId);
     }
 
-    // Obtener caso sin seguridad
+
     public Caso obtenerCaso(Long id) {
         return casoRepositorio.findById(id).orElseThrow();
     }
 
-    // ========================
-    // 🔹 Métodos SEGUROS
-    // ========================
 
     public Caso obtenerCasoSeguro(Long id, String abogadoUsername) {
         Caso caso = obtenerCaso(id);
@@ -103,9 +100,6 @@ public class CasoService {
         casoRepositorio.delete(caso);
     }
 
-    // ========================
-    // Métodos auxiliares
-    // ========================
 
     public ArchivoCaso subirArchivo(Long casoId, MultipartFile archivo) throws IOException {
         Caso caso = casoRepositorio.findById(casoId).orElseThrow();

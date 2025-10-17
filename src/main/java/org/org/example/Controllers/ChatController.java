@@ -32,19 +32,19 @@ public class ChatController {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    // 🔹 Obtener un chat específico por ID
+
     @GetMapping("/find/{chatId}")
     public Chat getChatById(@PathVariable String chatId) {
         return chatService.getChatById(chatId);
     }
 
-    // 🔹 Eliminar un chat específico
+
     @DeleteMapping("/{chatId}")
     public void deleteChat(@PathVariable String chatId) {
         chatService.deleteChat(chatId);
     }
 
-    // 🔹 Listar los chats del usuario autenticado
+
     @GetMapping("/mis-chats")
     public ResponseEntity<?> getChatsByUser(@RequestHeader(value = "Authorization", required = false) String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -72,7 +72,7 @@ public class ChatController {
         return ResponseEntity.ok(chats);
     }
 
-    // 🔹 Crear o actualizar un chat para el usuario autenticado
+
     @PostMapping("/create")
     public ResponseEntity<?> createChat(
             @RequestHeader(value = "Authorization", required = false) String authHeader,

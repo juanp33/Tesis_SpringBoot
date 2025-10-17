@@ -27,7 +27,7 @@ public class Message {
         this.filepath = filepath;
     }
 
-    // Getters y Setters
+
     public Long getId() { return id; }
     public String getChatId() { return chatId; }
     public void setChatId(String chatId) { this.chatId = chatId; }

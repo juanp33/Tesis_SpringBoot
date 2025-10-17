@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @RepositoryRestResource
 public interface PermisoRepository extends JpaRepository<Permiso, Long> {
-    // Métodos personalizados si necesitas
+
 }

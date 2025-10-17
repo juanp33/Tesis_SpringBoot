@@ -4,7 +4,7 @@ public class UsuarioDTO {
     private Long id;
     private String username;
     private String email;
-    private Long abogadoId; // viene del abogado asociado
+    private Long abogadoId;
 
     public UsuarioDTO(Long id, String username, String email, Long abogadoId) {
         this.id = id;
@@ -13,7 +13,7 @@ public class UsuarioDTO {
         this.abogadoId = abogadoId;
     }
 
-    // Getters y setters
+
     public Long getId() { return id; }
     public String getUsername() { return username; }
     public String getEmail() { return email; }

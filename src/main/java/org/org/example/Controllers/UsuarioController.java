@@ -25,7 +25,6 @@ public class UsuarioController {
         List<Usuario> usuarios = service.findAll();
 
         List<UsuarioDTO> usuariosDTO = usuarios.stream().map(u -> {
-            // Buscar abogado que tenga este usuario
             var abogado = abogadoService.findByUsuarioId(u.getId());
             Long abogadoId = abogado.map(a -> a.getId()).orElse(null);
 

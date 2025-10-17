@@ -15,7 +15,6 @@ public class Rol {
     @OneToMany(mappedBy = "rol", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RolPermiso> rolPermisos = new HashSet<>();
 
-    // Getters y setters necesarios
 
     public Long getId() {
         return id;

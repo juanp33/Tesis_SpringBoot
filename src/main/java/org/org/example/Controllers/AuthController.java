@@ -46,7 +46,6 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // ---------------- Validar token ----------------
     @GetMapping("/validar-token")
     public ResponseEntity<?> validarToken(@RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -72,7 +71,7 @@ public class AuthController {
         return ResponseEntity.ok("Token válido");
     }
 
-    // ---------------- Registro de usuario + abogado ----------------
+
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
         if (usuarioRepo.existsByUsername(request.getUsername())) {
@@ -82,13 +81,11 @@ public class AuthController {
             return ResponseEntity.badRequest().body("El email ya existe");
         }
 
-        // Crear usuario
         Usuario usuario = new Usuario();
         usuario.setUsername(request.getUsername());
         usuario.setEmail(request.getEmail());
         usuario.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        // Crear abogado y vincular con usuario
         Abogado abogado = new Abogado();
         abogado.setNombre(request.getNombre());
         abogado.setApellido(request.getApellido());
@@ -98,7 +95,7 @@ public class AuthController {
 
         usuario.setAbogado(abogado);
 
-        usuarioRepo.save(usuario); // guarda usuario y abogado
+        usuarioRepo.save(usuario);
 
         return ResponseEntity.ok("Usuario y Abogado creados correctamente");
     }

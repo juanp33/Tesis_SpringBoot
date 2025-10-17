@@ -20,7 +20,7 @@ public class ClienteController {
         this.clienteService = clienteService;
     }
 
-    // Obtener un cliente por ID
+
     @GetMapping("/{id}")
     public ResponseEntity<Cliente> getCliente(@PathVariable Long id) {
         try {
@@ -31,7 +31,7 @@ public class ClienteController {
         }
     }
 
-    // Crear cliente asociado al abogado autenticado
+
     @PostMapping
     public ResponseEntity<Cliente> crearCliente(@RequestBody Cliente cliente, Authentication auth) {
         try {
@@ -42,7 +42,7 @@ public class ClienteController {
         }
     }
 
-    // Listar clientes del abogado autenticado
+
     @GetMapping
     public ResponseEntity<List<Cliente>> listarMisClientes(Authentication authentication) {
         try {
@@ -54,7 +54,6 @@ public class ClienteController {
         }
     }
 
-    // ✅ Listar TODOS los clientes (para vincular)
     @GetMapping("/all")
     public ResponseEntity<List<Cliente>> listarTodosLosClientes() {
         try {
@@ -65,7 +64,7 @@ public class ClienteController {
         }
     }
 
-    // ✅ Vincular cliente existente con el abogado autenticado
+
     @PostMapping("/{id}/vincular")
     public ResponseEntity<Cliente> vincularCliente(
             @PathVariable Long id,
@@ -79,7 +78,7 @@ public class ClienteController {
         }
     }
 
-    // Actualizar cliente
+
     @PutMapping("/{id}")
     public ResponseEntity<Cliente> updateCliente(@PathVariable Long id, @RequestBody ClienteRequest request) {
         try {
@@ -96,7 +95,7 @@ public class ClienteController {
         }
     }
 
-    // Eliminar cliente
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCliente(@PathVariable Long id) {
         try {
@@ -107,7 +106,6 @@ public class ClienteController {
         }
     }
 
-    // Obtener los casos de un cliente
     @GetMapping("/{id}/casos")
     public ResponseEntity<List<Caso>> getCasosByCliente(@PathVariable Long id) {
         try {

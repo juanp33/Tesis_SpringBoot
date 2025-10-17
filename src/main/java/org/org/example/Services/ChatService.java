@@ -30,7 +30,7 @@ public class ChatService {
     public List<Message> saveChat(String chatId, String userMessage, String assistantResponse, List<MultipartFile> files) throws IOException {
         List<Message> saved = new ArrayList<>();
 
-        // Guardar archivos del usuario (si hay)
+
         List<String> filePaths = new ArrayList<>();
         if (files != null && !files.isEmpty()) {
             for (MultipartFile file : files) {
@@ -40,13 +40,11 @@ public class ChatService {
             }
         }
 
-        // Guardar mensaje del usuario
         Message userMsg = new Message(chatId, "user", userMessage,
                 filePaths.isEmpty() ? null : Path.of(filePaths.get(0)).getFileName().toString(),
                 filePaths.isEmpty() ? null : filePaths.get(0));
         saved.add(messageRepository.save(userMsg));
 
-        // Guardar respuesta del asistente
         Message aiMsg = new Message(chatId, "assistant", assistantResponse, null, null);
         saved.add(messageRepository.save(aiMsg));
 
