@@ -16,6 +16,7 @@ public class Rol {
     private Set<RolPermiso> rolPermisos = new HashSet<>();
 
 
+
     public Long getId() {
         return id;
     }

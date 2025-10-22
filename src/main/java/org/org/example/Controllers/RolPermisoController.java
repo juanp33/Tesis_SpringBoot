@@ -24,6 +24,7 @@ public class RolPermisoController {
         return ResponseEntity.ok(list);
     }
 
+
     @GetMapping("/{id}")
     public ResponseEntity<RolPermiso> getById(@PathVariable Long id) {
         Optional<RolPermiso> opt = service.findById(id);
@@ -51,6 +52,7 @@ public class RolPermisoController {
         RolPermiso actualizado = service.update(id, rp);
         return ResponseEntity.ok(actualizado);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

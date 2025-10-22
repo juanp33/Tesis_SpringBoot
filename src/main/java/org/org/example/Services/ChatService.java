@@ -40,10 +40,12 @@ public class ChatService {
             }
         }
 
+
         Message userMsg = new Message(chatId, "user", userMessage,
                 filePaths.isEmpty() ? null : Path.of(filePaths.get(0)).getFileName().toString(),
                 filePaths.isEmpty() ? null : filePaths.get(0));
         saved.add(messageRepository.save(userMsg));
+
 
         Message aiMsg = new Message(chatId, "assistant", assistantResponse, null, null);
         saved.add(messageRepository.save(aiMsg));
