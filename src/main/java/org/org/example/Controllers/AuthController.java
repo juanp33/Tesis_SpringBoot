@@ -21,6 +21,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -46,6 +48,7 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // ================== VALIDAR TOKEN ==================
     @GetMapping("/validar-token")
     public ResponseEntity<?> validarToken(@RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -71,36 +74,53 @@ public class AuthController {
         return ResponseEntity.ok("Token válido");
     }
 
-
+    // ================== REGISTRO ==================
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
+        // 🔹 Validaciones de usuario
         if (usuarioRepo.existsByUsername(request.getUsername())) {
-            return ResponseEntity.badRequest().body("El username ya existe");
-        }
-        if (usuarioRepo.existsByEmail(request.getEmail())) {
-            return ResponseEntity.badRequest().body("El email ya existe");
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("mensaje", "⚠️ El nombre de usuario ya existe."));
         }
 
+        if (usuarioRepo.existsByEmail(request.getEmail())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("mensaje", "⚠️ El correo electrónico ya está en uso."));
+        }
+
+        // 🔹 Validación de cédula duplicada
+        if (abogadoRepository.existsByCi(request.getCi())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("mensaje", "⚠️ Ya existe un abogado registrado con esa cédula."));
+        }
+
+        // 🔹 Crear usuario
         Usuario usuario = new Usuario();
         usuario.setUsername(request.getUsername());
         usuario.setEmail(request.getEmail());
         usuario.setPassword(passwordEncoder.encode(request.getPassword()));
 
+        // 🔹 Crear abogado vinculado al usuario
         Abogado abogado = new Abogado();
         abogado.setNombre(request.getNombre());
         abogado.setApellido(request.getApellido());
         abogado.setCi(request.getCi());
-        abogado.setEmail(request.getEmail());
         abogado.setUsuario(usuario);
 
         usuario.setAbogado(abogado);
 
+        // 🔹 Guardar ambos
         usuarioRepo.save(usuario);
 
-        return ResponseEntity.ok("Usuario y Abogado creados correctamente");
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(Map.of("mensaje", "✅ Usuario y abogado creados correctamente."));
     }
 
-    // ---------------- Login ----------------
+    // ================== LOGIN ==================
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody JwtRequest loginRequest) {
         try {
@@ -117,7 +137,8 @@ public class AuthController {
 
             return ResponseEntity.ok(new JwtResponse(jwt));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("mensaje", "❌ Credenciales inválidas."));
         }
     }
 }

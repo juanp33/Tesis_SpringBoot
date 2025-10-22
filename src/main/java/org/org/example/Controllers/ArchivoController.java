@@ -22,7 +22,6 @@ public class ArchivoController {
             @PathVariable String nombreArchivo,
             Authentication authentication) throws MalformedURLException {
 
-
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(403).build();
         }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.*;
+import org.example.Models.Usuario;
+import org.example.Models.Cliente;
 
 @Entity
 public class Abogado {
@@ -14,14 +16,16 @@ public class Abogado {
 
     private String nombre;
     private String apellido;
+
+    @Column(unique = true)
     private String ci;
-    private String email;
-    // Relación con Usuario
+
+
     @OneToOne
     @JoinColumn(name = "usuario_id")
     @JsonBackReference
     private Usuario usuario;
-    // Abogado.java
+
     @ManyToMany(mappedBy = "abogados")
     @JsonIgnore
     private List<Cliente> clientes;
@@ -57,13 +61,8 @@ public class Abogado {
         this.ci = ci;
     }
 
-    public String getEmail() {
-        return email;
-    }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+
 
     public Usuario getUsuario() {
         return usuario;

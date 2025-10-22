@@ -100,7 +100,6 @@ public class CasoService {
         casoRepositorio.delete(caso);
     }
 
-
     public ArchivoCaso subirArchivo(Long casoId, MultipartFile archivo) throws IOException {
         Caso caso = casoRepositorio.findById(casoId).orElseThrow();
 

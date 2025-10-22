@@ -54,6 +54,7 @@ public class ClienteController {
         }
     }
 
+
     @GetMapping("/all")
     public ResponseEntity<List<Cliente>> listarTodosLosClientes() {
         try {
@@ -105,6 +106,7 @@ public class ClienteController {
             return ResponseEntity.notFound().build();
         }
     }
+
 
     @GetMapping("/{id}/casos")
     public ResponseEntity<List<Caso>> getCasosByCliente(@PathVariable Long id) {

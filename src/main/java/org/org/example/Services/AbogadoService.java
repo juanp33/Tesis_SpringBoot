@@ -23,6 +23,11 @@ public class AbogadoService {
     }
 
     public Abogado create(Abogado a) {
+        if (repo.existsByCi(a.getCi())) {
+            throw new IllegalArgumentException("duplicado_ci");
+        }
+
+
         a.setId(null);
         return repo.save(a);
     }

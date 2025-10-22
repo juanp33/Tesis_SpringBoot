@@ -12,7 +12,7 @@ public class Chat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String chatId; // igual al que genera el frontend (session_xxx)
+    private String chatId;
     private String title;
     private String username;
     private LocalDateTime createdAt = LocalDateTime.now();

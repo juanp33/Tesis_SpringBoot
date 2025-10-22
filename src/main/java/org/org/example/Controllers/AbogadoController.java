@@ -1,6 +1,7 @@
 package org.example.Controllers;
 
 import java.util.List;
+import java.util.Map;
 
 import org.example.Models.Abogado;
 import org.example.Services.AbogadoService;
@@ -27,9 +28,14 @@ public class AbogadoController {
     }
 
     @PostMapping
-    public ResponseEntity<Abogado> create(@RequestBody Abogado a) {
-        Abogado c = service.create(a);
-        return ResponseEntity.status(201).body(c);
+    public ResponseEntity<?> create(@RequestBody Abogado a) {
+        try {
+            Abogado nuevo = service.create(a);
+            return ResponseEntity.status(201).body(nuevo);
+        } catch (IllegalArgumentException e) {
+            // 🔹 Retornamos mensaje claro si ya existe la cédula
+            return ResponseEntity.badRequest().body(Map.of("mensaje", "⚠️ Ya existe un abogado registrado con esa cédula."));
+        }
     }
 
     @PutMapping("/{id}")
