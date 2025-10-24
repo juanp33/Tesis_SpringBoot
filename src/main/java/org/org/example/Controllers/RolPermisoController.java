@@ -62,4 +62,35 @@ public class RolPermisoController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    @GetMapping("/porRol/{idRol}")
+    public ResponseEntity<List<RolPermiso>> getByRol(@PathVariable Long idRol) {
+        List<RolPermiso> lista = service.findAll()
+                .stream()
+                .filter(rp -> rp.getRol() != null && rp.getRol().getId().equals(idRol))
+                .toList();
+
+        if (lista.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(lista);
+    }
+
+    @DeleteMapping("/porRol/{idRol}")
+    public ResponseEntity<Void> deleteByRol(@PathVariable Long idRol) {
+        List<RolPermiso> lista = service.findAll()
+                .stream()
+                .filter(rp -> rp.getRol() != null && rp.getRol().getId().equals(idRol))
+                .toList();
+
+        if (lista.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        lista.forEach(rp -> service.delete(rp.getId()));
+        return ResponseEntity.noContent().build();
+    }
+
 }

@@ -2,6 +2,7 @@ package org.example.Models;
 
 import jakarta.persistence.*;
 import java.util.*;
+import org.example.Models.RolPermiso;
 
 @Entity
 public class Rol {
@@ -13,6 +14,7 @@ public class Rol {
     private String nombre;
 
     @OneToMany(mappedBy = "rol", cascade = CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<RolPermiso> rolPermisos = new HashSet<>();
 
 

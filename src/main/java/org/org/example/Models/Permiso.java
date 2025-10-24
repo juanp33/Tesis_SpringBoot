@@ -2,6 +2,7 @@ package org.example.Models;
 
 import jakarta.persistence.*;
 import java.util.*;
+import org.example.Models.RolPermiso;
 
 @Entity
 public class Permiso {
@@ -12,6 +13,7 @@ public class Permiso {
     private String descripcion;
 
     @OneToMany(mappedBy = "permiso", cascade = CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<RolPermiso> rolPermisos = new HashSet<>();
 
     public void setId(Long id) {
