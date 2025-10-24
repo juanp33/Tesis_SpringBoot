@@ -2,6 +2,7 @@ package org.example.Models;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import java.time.LocalDateTime; // 🔹 NUEVO
 import java.util.*;
 
 @Entity
@@ -26,10 +27,21 @@ public class Usuario {
     )
     private Set<Rol> roles = new HashSet<>();
 
-
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Abogado abogado;
+
+    // ==============================
+    // 🔹 NUEVOS CAMPOS PARA 2FA
+    // ==============================
+    private String codigo2FA;  // Código temporal enviado al email
+
+    private LocalDateTime codigoExpira; // Fecha y hora de expiración (5 min)
+
+    // ==============================
+    // 🔹 GETTERS Y SETTERS
+    // ==============================
+
     public Long getId() {
         return id;
     }
@@ -76,5 +88,24 @@ public class Usuario {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    // ==============================
+    // 🔹 NUEVOS GETTERS Y SETTERS
+    // ==============================
+    public String getCodigo2FA() {
+        return codigo2FA;
+    }
+
+    public void setCodigo2FA(String codigo2FA) {
+        this.codigo2FA = codigo2FA;
+    }
+
+    public LocalDateTime getCodigoExpira() {
+        return codigoExpira;
+    }
+
+    public void setCodigoExpira(LocalDateTime codigoExpira) {
+        this.codigoExpira = codigoExpira;
     }
 }
