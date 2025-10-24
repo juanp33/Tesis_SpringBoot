@@ -8,4 +8,7 @@ import java.util.List;
 
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     List<Cliente> findByAbogadosContains(Abogado abogado);
+
+
+    boolean existsByCi(String ci);
 }

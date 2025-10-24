@@ -51,6 +51,12 @@ public class ClienteService {
             throw new RuntimeException("El usuario no tiene un abogado asociado");
         }
 
+        // 🔹 VALIDAR CÉDULA DUPLICADA
+        boolean existeCI = clienteRepository.existsByCi(cliente.getCi());
+        if (existeCI) {
+            throw new RuntimeException("Ya existe un cliente con esa cédula");
+        }
+
         if (cliente.getAbogados() == null) {
             cliente.setAbogados(new ArrayList<>());
         }
@@ -120,11 +126,25 @@ public class ClienteService {
     }
 
 
+
+    @Transactional
     public void deleteCliente(Long id) {
-        Cliente cliente = getCliente(id); // valida existencia
+        Cliente cliente = getCliente(id);
+
+        // 🔹 1. Desvincular al cliente de los abogados (tabla intermedia)
+        if (cliente.getAbogados() != null) {
+            cliente.getAbogados().clear();
+        }
+
+        // 🔹 2. Asegurar que se eliminen los casos del cliente
+        if (cliente.getCasos() != null && !cliente.getCasos().isEmpty()) {
+            cliente.getCasos().forEach(c -> c.setCliente(null)); // corta la relación inversa
+            cliente.getCasos().clear(); // elimina todos los casos en cascada
+        }
+
+        // 🔹 3. Finalmente eliminar el cliente
         clienteRepository.delete(cliente);
     }
-
 
     public List<Caso> getCasosByCliente(Long clienteId) {
         Cliente cliente = getCliente(clienteId);
