@@ -1,8 +1,7 @@
 package org.example.Controllers;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+
 import org.example.Models.Rol;
 import org.example.Models.Usuario;
 import org.example.Services.UsuarioService;
@@ -105,4 +104,31 @@ public class UsuarioController {
         if (opt.isEmpty()) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(opt.get().getRoles());
     }
+    @GetMapping("/{identificador}/permisos")
+    public ResponseEntity<List<String>> getPermisosPorUsuario(@PathVariable String identificador) {
+        Optional<Usuario> usuarioOpt;
+
+        // Si el parámetro es numérico, busca por ID; si no, por username
+        if (identificador.matches("\\d+")) {
+            usuarioOpt = service.findById(Long.parseLong(identificador));
+        } else {
+            usuarioOpt = service.findByUsername(identificador);
+        }
+
+        if (usuarioOpt.isEmpty()) return ResponseEntity.notFound().build();
+
+        Usuario usuario = usuarioOpt.get();
+        Set<String> permisos = new HashSet<>();
+
+        usuario.getRoles().forEach(rol -> {
+            rol.getRolPermisos().forEach(rp -> {
+                if (rp.getPermiso() != null && rp.getPermiso().getNombre() != null) {
+                    permisos.add(rp.getPermiso().getNombre());
+                }
+            });
+        });
+
+        return ResponseEntity.ok(new ArrayList<>(permisos));
+    }
+
 }

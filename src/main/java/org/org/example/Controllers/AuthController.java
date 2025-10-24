@@ -18,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -132,10 +133,21 @@ public class AuthController {
             );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-            String jwt = jwtUtil.generateToken((UserDetails) authentication.getPrincipal());
+            // 🔹 Buscar el usuario real desde la DB
+            Usuario usuario = usuarioRepo.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
-            return ResponseEntity.ok(new JwtResponse(jwt));
+            // 🔹 Generar token
+            String jwt = jwtUtil.generateToken(userDetails);
+
+            // 🔹 Enviar token + id + username
+            return ResponseEntity.ok(Map.of(
+                    "token", jwt,
+                    "id", usuario.getId(),
+                    "username", usuario.getUsername()
+            ));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("mensaje", "❌ Credenciales inválidas."));

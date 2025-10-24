@@ -1,5 +1,4 @@
-package org.example.Services;// src/main/java/org/example/Servicios/UsuarioService.java
-
+package org.example.Services;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UsuarioService {
+
     @Autowired
     private UsuarioRepository repo;
 
@@ -34,5 +34,10 @@ public class UsuarioService {
 
     public void delete(Long id) {
         repo.deleteById(id);
+    }
+
+    // ✅ AGREGÁ ESTE MÉTODO
+    public Optional<Usuario> findByUsername(String username) {
+        return repo.findByUsername(username);
     }
 }
