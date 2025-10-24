@@ -1,5 +1,4 @@
-package org.example.Services;// src/main/java/org/example/Servicios/AbogadoService.java
-
+package org.example.Services;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AbogadoService {
+
     @Autowired
     private AbogadoRepository repo;
 
@@ -26,8 +26,6 @@ public class AbogadoService {
         if (repo.existsByCi(a.getCi())) {
             throw new IllegalArgumentException("duplicado_ci");
         }
-
-
         a.setId(null);
         return repo.save(a);
     }
@@ -41,7 +39,8 @@ public class AbogadoService {
         repo.deleteById(id);
     }
 
+    // ✅ Corregido para llamar al método correcto del repositorio
     public Optional<Abogado> findByUsuarioId(Long usuarioId) {
-        return repo.findByUsuarioId(usuarioId);
+        return repo.findByUsuario_Id(usuarioId);
     }
 }

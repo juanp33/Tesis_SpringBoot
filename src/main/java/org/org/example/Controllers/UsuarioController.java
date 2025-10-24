@@ -1,7 +1,9 @@
 package org.example.Controllers;
 
 import java.util.List;
-
+import java.util.Optional;
+import java.util.Set;
+import org.example.Models.Rol;
 import org.example.Models.Usuario;
 import org.example.Services.UsuarioService;
 import org.org.example.Response.UsuarioDTO;
@@ -27,12 +29,16 @@ public class UsuarioController {
         List<UsuarioDTO> usuariosDTO = usuarios.stream().map(u -> {
             var abogado = abogadoService.findByUsuarioId(u.getId());
             Long abogadoId = abogado.map(a -> a.getId()).orElse(null);
+            String abogadoNombre = abogado.map(a -> a.getNombre()).orElse("");
+            String abogadoApellido = abogado.map(a -> a.getApellido()).orElse("");
 
             return new UsuarioDTO(
                     u.getId(),
                     u.getUsername(),
                     u.getEmail(),
-                    abogadoId
+                    abogadoId,
+                    abogadoNombre,
+                    abogadoApellido
             );
         }).toList();
 
@@ -63,5 +69,40 @@ public class UsuarioController {
         if (!service.findById(id).isPresent()) return ResponseEntity.notFound().build();
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/roles")
+    public ResponseEntity<Usuario> updateRoles(
+            @PathVariable Long id,
+            @RequestBody List<Long> nuevosRolesIds) {
+
+        Optional<Usuario> optUsuario = service.findById(id);
+        if (optUsuario.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Usuario usuario = optUsuario.get();
+
+        // Crear objetos Rol con solo el ID
+        Set<Rol> nuevosRoles = nuevosRolesIds.stream()
+                .map(rolId -> {
+                    org.example.Models.Rol r = new org.example.Models.Rol();
+                    r.setId(rolId);
+                    return r;
+                })
+                .collect(java.util.stream.Collectors.toSet());
+
+        usuario.setRoles(nuevosRoles);
+
+        // Guardar cambios
+        Usuario actualizado = service.update(id, usuario);
+        return ResponseEntity.ok(actualizado);
+    }
+
+    @GetMapping("/{id}/roles")
+    public ResponseEntity<Set<Rol>> getRolesByUsuario(@PathVariable Long id) {
+        Optional<Usuario> opt = service.findById(id);
+        if (opt.isEmpty()) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(opt.get().getRoles());
     }
 }
