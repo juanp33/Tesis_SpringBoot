@@ -39,8 +39,17 @@ public class AbogadoService {
         repo.deleteById(id);
     }
 
-    // ✅ Corregido para llamar al método correcto del repositorio
+    // ✅ Buscar abogado por ID de usuario
     public Optional<Abogado> findByUsuarioId(Long usuarioId) {
         return repo.findByUsuario_Id(usuarioId);
+    }
+
+    // ✅ Buscar abogado por nombre de usuario del token JWT
+    public Abogado findByUsuarioUsername(String username) {
+        return repo.findAll().stream()
+                .filter(a -> a.getUsuario() != null &&
+                        a.getUsuario().getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
     }
 }
