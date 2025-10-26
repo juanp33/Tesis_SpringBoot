@@ -19,6 +19,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.example.Models.Abogado;
+import org.example.Repositorios.RolRepository;
 
 import java.util.Map;
 import java.util.Optional;
@@ -35,6 +37,9 @@ public class AuthController {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private RolRepository rolRepo;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -77,6 +82,7 @@ public class AuthController {
     // ================== REGISTRO ==================
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
+        // 🔹 Validaciones
         if (usuarioRepo.existsByUsername(request.getUsername())) {
             return ResponseEntity.badRequest().body(Map.of("mensaje", "⚠️ El nombre de usuario ya existe."));
         }
@@ -85,15 +91,28 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("mensaje", "⚠️ El correo electrónico ya está en uso."));
         }
 
+        // 🔹 Crear usuario
         Usuario usuario = new Usuario();
         usuario.setUsername(request.getUsername());
         usuario.setEmail(request.getEmail());
         usuario.setPassword(passwordEncoder.encode(request.getPassword()));
 
+        // 🔹 Asignar rol base (ID = 1)
+        rolRepo.findById(1L).ifPresent(rol -> usuario.getRoles().add(rol));
+
+        // 🔹 Crear abogado vinculado al usuario
+        Abogado abogado = new Abogado();
+        abogado.setNombre(request.getNombre());
+        abogado.setApellido(request.getApellido());
+        abogado.setCi(request.getCi());
+        abogado.setUsuario(usuario);   // <-- vínculo lado abogado
+        usuario.setAbogado(abogado);   // <-- vínculo lado usuario
+
+        // 🔹 Guardar usuario (gracias al cascade, se guarda también el abogado)
         usuarioRepo.save(usuario);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Map.of("mensaje", "✅ Usuario creado correctamente."));
+                .body(Map.of("mensaje", "✅ Usuario, abogado y rol asignado correctamente."));
     }
 
     // ================== LOGIN (Paso 1: genera OTP) ==================

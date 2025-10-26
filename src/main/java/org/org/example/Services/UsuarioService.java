@@ -8,6 +8,8 @@ import org.example.Repositorios.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.example.Models.Rol;
+import java.util.Set;
 
 @Service
 public class UsuarioService {
@@ -45,6 +47,15 @@ public class UsuarioService {
             existente.setPassword(passwordEncoder.encode(u.getPassword()));
         }
 
+        return repo.save(existente);
+    }
+    public Usuario updateRoles(Long id, Set<Rol> nuevosRoles) {
+        Usuario existente = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        existente.setRoles(nuevosRoles);
+
+        // ✅ No tocar username, password, email ni abogado
         return repo.save(existente);
     }
 

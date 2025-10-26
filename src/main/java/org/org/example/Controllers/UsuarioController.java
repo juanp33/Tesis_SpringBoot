@@ -1,6 +1,7 @@
 package org.example.Controllers;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.example.Models.Rol;
 import org.example.Models.Usuario;
@@ -80,21 +81,18 @@ public class UsuarioController {
             return ResponseEntity.notFound().build();
         }
 
-        Usuario usuario = optUsuario.get();
-
         // Crear objetos Rol con solo el ID
         Set<Rol> nuevosRoles = nuevosRolesIds.stream()
                 .map(rolId -> {
-                    org.example.Models.Rol r = new org.example.Models.Rol();
+                    Rol r = new Rol();
                     r.setId(rolId);
                     return r;
                 })
-                .collect(java.util.stream.Collectors.toSet());
+                .collect(Collectors.toSet());
 
-        usuario.setRoles(nuevosRoles);
+        // ✅ Llamar al nuevo método que no toca password/email/etc.
+        Usuario actualizado = service.updateRoles(id, nuevosRoles);
 
-        // Guardar cambios
-        Usuario actualizado = service.update(id, usuario);
         return ResponseEntity.ok(actualizado);
     }
 
