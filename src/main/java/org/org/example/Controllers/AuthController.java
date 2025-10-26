@@ -198,4 +198,61 @@ public class AuthController {
                 "emailMasked", masked
         ));
     }
+
+
+    // ================== RECUPERAR CONTRASEÑA ==================
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        if (email == null || email.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", "❌ Email requerido."));
+        }
+
+        Optional<Usuario> opt = usuarioRepo.findByEmail(email);
+        if (opt.isEmpty()) {
+            return ResponseEntity.status(404).body(Map.of("mensaje", "❌ No existe usuario con ese correo."));
+        }
+
+        Usuario usuario = opt.get();
+        VerificationCode vc = twoFactorService.iniciar2FA(usuario);
+        String masked = TwoFactorService.maskEmail(email);
+
+        return ResponseEntity.ok(Map.of(
+                "mensaje", "✅ Código enviado al correo.",
+                "txId", vc.getTxId(),
+                "emailMasked", masked
+        ));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
+        String txId = body.get("txId");
+        String code = body.get("code");
+        String nuevaPassword = body.get("password");
+
+        if (nuevaPassword == null || nuevaPassword.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", "❌ Nueva contraseña requerida."));
+        }
+
+        boolean ok = twoFactorService.validarCodigo(txId, code);
+        if (!ok) {
+            return ResponseEntity.status(401).body(Map.of("mensaje", "❌ Código inválido o expirado."));
+        }
+
+        Optional<VerificationCode> opt = twoFactorService.getByTxId(txId);
+        if (opt.isEmpty()) {
+            return ResponseEntity.status(401).body(Map.of("mensaje", "Transacción inválida."));
+        }
+
+        VerificationCode vc = opt.get();
+        Usuario usuario = usuarioRepo.findByUsername(vc.getUsername())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        usuario.setPassword(passwordEncoder.encode(nuevaPassword));
+        usuarioRepo.save(usuario);
+
+        return ResponseEntity.ok(Map.of("mensaje", "✅ Contraseña restablecida correctamente."));
+    }
 }
+
