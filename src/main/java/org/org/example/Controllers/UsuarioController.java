@@ -131,4 +131,32 @@ public class UsuarioController {
         return ResponseEntity.ok(new ArrayList<>(permisos));
     }
 
+    @GetMapping("/{identificador}/tienePermiso")
+    public ResponseEntity<Boolean> tienePermiso(
+            @PathVariable String identificador,
+            @RequestParam String nombre) {
+
+        Optional<Usuario> usuarioOpt;
+
+        if (identificador.matches("\\d+")) {
+            usuarioOpt = service.findById(Long.parseLong(identificador));
+        } else {
+            usuarioOpt = service.findByUsername(identificador);
+        }
+        if (usuarioOpt.isEmpty()) return ResponseEntity.ok(false);
+
+        String buscado = nombre == null ? "" : nombre.trim().toLowerCase();
+
+        boolean ok = usuarioOpt.get().getRoles().stream()
+                .filter(Objects::nonNull)
+                .flatMap(rol -> rol.getRolPermisos().stream())
+                .filter(Objects::nonNull)
+                .map(rp -> rp.getPermiso() != null ? rp.getPermiso().getNombre() : null)
+                .filter(Objects::nonNull)
+                .map(s -> s.trim().toLowerCase())
+                .anyMatch(p -> p.equals(buscado));
+
+        return ResponseEntity.ok(ok);
+    }
+
 }
