@@ -1,5 +1,6 @@
 package org.example.Services;
 
+import com.lowagie.text.Paragraph;
 import org.example.Models.ArchivoCaso;
 import org.example.Models.Caso;
 import org.example.Models.Cliente;
@@ -10,6 +11,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import java.io.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+import com.lowagie.text.Document;
+import com.lowagie.text.Font;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfWriter;
 
 import java.nio.file.*;
 import java.io.IOException;
@@ -144,6 +152,73 @@ public class CasoService {
         }
 
         return nuevoCaso;
+    }
+
+    public File generarZipDeCaso(Long id, String abogadoUsername) throws IOException {
+        Caso caso = obtenerCasoSeguro(id, abogadoUsername);
+        List<ArchivoCaso> archivos = archivoCasoRepositorio.findByCasoId(id);
+
+        File zipFile = File.createTempFile("caso_" + id + "_", ".zip");
+
+        try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile))) {
+            // ==================== 📄 1. Crear PDF con info del caso ====================
+            File infoPdf = generarInfoCasoPdf(caso);
+
+            // Agregar el PDF al ZIP
+            try (FileInputStream fis = new FileInputStream(infoPdf)) {
+                ZipEntry zipEntry = new ZipEntry("informacion_caso.pdf");
+                zipOut.putNextEntry(zipEntry);
+                fis.transferTo(zipOut);
+                zipOut.closeEntry();
+            }
+
+            // ==================== 📦 2. Agregar archivos del caso ====================
+            for (ArchivoCaso archivo : archivos) {
+                File file = new File(archivo.getRutaArchivo());
+                if (file.exists()) {
+                    try (FileInputStream fis = new FileInputStream(file)) {
+                        ZipEntry zipEntry = new ZipEntry(file.getName());
+                        zipOut.putNextEntry(zipEntry);
+                        fis.transferTo(zipOut);
+                        zipOut.closeEntry();
+                    }
+                }
+            }
+        }
+
+        return zipFile;
+    }
+
+    // ==================== 🧾 Método auxiliar para crear el PDF ====================
+    private File generarInfoCasoPdf(Caso caso) {
+        try {
+            File pdf = File.createTempFile("info_caso_" + caso.getId(), ".pdf");
+            Document document = new Document();
+            PdfWriter.getInstance(document, new FileOutputStream(pdf));
+            document.open();
+
+            Font tituloFont = new Font(Font.HELVETICA, 18, Font.BOLD);
+            Font textoFont = new Font(Font.HELVETICA, 12);
+
+            // 🔹 Formatear fecha prolijamente (sin segundos ni T)
+            java.time.format.DateTimeFormatter formato =
+                    java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            String fechaFormateada = caso.getFechaCreacion().format(formato);
+
+            document.add(new Paragraph("Información del Caso", tituloFont));
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph("Título: " + caso.getTitulo(), textoFont));
+            document.add(new Paragraph("Tipo: " + caso.getTipo(), textoFont));
+            document.add(new Paragraph("Descripción: " + caso.getDescripcion(), textoFont));
+            document.add(new Paragraph("Estado: " + caso.getEstado(), textoFont));
+            document.add(new Paragraph("Abogado: " + caso.getAbogado(), textoFont));
+            document.add(new Paragraph("Fecha de creación: " + fechaFormateada, textoFont));
+
+            document.close();
+            return pdf;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al generar PDF de información del caso", e);
+        }
     }
 }
 

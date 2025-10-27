@@ -7,6 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.io.*;
 
 import java.util.List;
 
@@ -113,5 +118,21 @@ public class CasoController {
         private String estado;
         public String getEstado() { return estado; }
         public void setEstado(String estado) { this.estado = estado; }
+    }
+
+    @GetMapping("/{id}/descargar")
+    public ResponseEntity<Resource> descargarCasoCompleto(
+            @PathVariable Long id,
+            Authentication auth
+    ) throws IOException {
+        File zip = casoService.generarZipDeCaso(id, auth.getName());
+
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(zip));
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + zip.getName())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .contentLength(zip.length())
+                .body(resource);
     }
 }
